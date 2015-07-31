@@ -162,7 +162,7 @@ for uuid in `cat $EXPORT_LIST` ;do
        VMNAME="`xe vm-param-get param-name=name-label uuid=$uuid`"
        echo "Excluindo exports antigos..."
        rm $EXPORT_PATH"/"$VMNAME* >> $LOGFILE
-       SNAPUUID=$(xe snapshot-list is-a-template=false | grep -R3 $VMNAME | grep uuid | sed "s/uuid ( RO)                     : //")
+       SNAPUUID=$(xe snapshot-list is-a-template=false | grep -R3 $VMNAME | grep uuid | sed "s/uuid ( RO)                : //")
        FILENAME=$(xe snapshot-param-get param-name=name-label uuid=$SNAPUUID).xva
        echo "" >> $LOGFILE
        echo `date +%k:%M`" - Exportando arquivo /mnt/XS_Backups/VMs_Exports/$FILENAME ..." >> $LOGFILE
