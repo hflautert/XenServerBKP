@@ -115,14 +115,15 @@ echo $DATE" - Iniciando snapshot das VMs marcadas com CustomField Snapshot = S" 
 echo "" >> $LOGFILE
 for uuid in `cat $SNAP_LIST` ;do
        VMNAME="`xe vm-param-get param-name=name-label uuid=$uuid`"
-       echo "Criando snapshot para a VM "$VMNAME >> $LOGFILE
-       SNAPSHOT_UUID="`xe vm-snapshot vm="$VMNAME" new-name-label="$VMNAME"_$DATE`"
-       OLD_SNAPS=$(xe snapshot-list is-a-template=false | grep -R3 "$VMNAME" | grep uuid | sed "s/uuid ( RO)                : //")
+       OLD_SNAPS=$(xe snapshot-list is-a-snapshot=true | grep -R3 "$VMNAME" | grep uuid | sed "s/uuid ( RO)                : //")
        for i in $OLD_SNAPS;do
        echo "" >> $LOGFILE
        echo "Excluindo snapshot antigo uuid "$i  >> $LOGFILE
-       xe vm-uninstall uuid=$i force=true
+       xe snapshot-destroy uuid=$i
        done
+
+       echo "Criando snapshot para a VM "$VMNAME >> $LOGFILE
+       SNAPSHOT_UUID="`xe vm-snapshot vm="$VMNAME" new-name-label="$VMNAME"_$DATE`"
 
        xe template-param-set is-a-template=false ha-always-run=false uuid=$SNAPSHOT_UUID
        xe vm-param-set other-config:XenCenter.CustomFields.Snapshot=SNAP uuid=$SNAPSHOT_UUID
